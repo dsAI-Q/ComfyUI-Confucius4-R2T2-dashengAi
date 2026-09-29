@@ -79,14 +79,14 @@ git clone https://huggingface.co/netease-youdao/Confucius4-R2T2 \
 在 ComfyUI-Manager 中通过 Git URL 安装：
 
 ```
-https://github.com/<你的用户名>/ComfyUI-Confucius4-R2T2.git
+https://github.com/dsAI-Q/ComfyUI-Confucius4-R2T2-dashengAi.git
 ```
 
 ### 方式二：手动安装
 
 ```bash
 cd ComfyUI/custom_nodes
-git clone https://github.com/<你的用户名>/ComfyUI-Confucius4-R2T2.git
+git clone https://github.com/dsAI-Q/ComfyUI-Confucius4-R2T2-dashengAi.git
 cd ComfyUI-Confucius4-R2T2
 pip install -r requirements.txt
 ```
