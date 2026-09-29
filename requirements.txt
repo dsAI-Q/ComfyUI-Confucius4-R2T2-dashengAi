@@ -1,0 +1,12 @@
+# Core runtime dependencies for ComfyUI-Confucius4-R2T2.
+#
+# `torch` / `transformers` are normally already present in a ComfyUI
+# environment, so they are intentionally not pinned here.
+#
+# Optional: for the vLLM backend (Linux + CUDA only) install additionally:
+#   pip install -U qwen-asr[vllm]
+# and load the model with backend="vllm".
+
+qwen-asr
+librosa
+soundfile
