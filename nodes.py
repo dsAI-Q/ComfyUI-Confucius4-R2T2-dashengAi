@@ -86,6 +86,32 @@ def _repo_is_available(repo_dir: str) -> bool:
     return os.path.isfile(os.path.join(repo_dir, "config.json"))
 
 
+# Hugging Face mirror that works without a proxy in mainland China.
+_HF_MIRROR = "https://hf-mirror.com"
+
+
+def _download_model_snapshot(repo_id: str, repo_dir: str, endpoint=None) -> None:
+    """Download a full HF repo snapshot to `repo_dir`."""
+    from huggingface_hub import snapshot_download  # noqa: PLC0415
+    snapshot_download(
+        repo_id=repo_id,
+        local_dir=repo_dir,
+        local_dir_use_symlinks=False,
+        endpoint=endpoint,
+    )
+
+
+def _manual_download_hint(repo_id: str, repo_dir: str) -> str:
+    return (
+        f"Model '{repo_id}' could not be downloaded automatically. "
+        "Please download it manually (see README):\n"
+        f"  # option 1: direct / with proxy (overseas network)\n"
+        f"  huggingface-cli download {repo_id} --local-dir \"{repo_dir}\"\n"
+        f"  # option 2: mainland mirror, no proxy needed (recommended)\n"
+        f"  HF_ENDPOINT=https://hf-mirror.com huggingface-cli download {repo_id} --local-dir \"{repo_dir}\""
+    )
+
+
 def _ensure_model(model_path: str, auto_download: bool = True) -> str:
     """
     Resolve `model_path` to a real local path.
@@ -111,25 +137,28 @@ def _ensure_model(model_path: str, auto_download: bool = True) -> str:
     if not auto_download:
         raise RuntimeError(
             f"Model '{mp}' is not found locally at:\n  {repo_dir}\n\n"
-            "Download it manually (see README):\n"
-            f"  huggingface-cli download {mp} --local-dir \"{repo_dir}\""
+            + _manual_download_hint(mp, repo_dir)
         )
 
     print(f"[Confucius4-R2T2] Downloading model '{mp}' to:\n  {repo_dir}")
+    last_err = None
     try:
-        from huggingface_hub import snapshot_download  # noqa: PLC0415
-        snapshot_download(
-            repo_id=mp,
-            local_dir=repo_dir,
-            local_dir_use_symlinks=False,
-        )
+        # 1) Default endpoint (respects HF_ENDPOINT / proxy env of the process).
+        _download_model_snapshot(mp, repo_dir, endpoint=None)
     except Exception as e:  # noqa: BLE001
-        raise RuntimeError(
-            f"Automatic download of '{mp}' failed: {e}\n\n"
-            "You can also download it manually (see README):\n"
-            f"  huggingface-cli download {mp} --local-dir \"{repo_dir}\"\n"
-            "then re-run the node with the same model_path."
-        ) from e
+        last_err = e
+        # 2) Fallback: hf-mirror.com works without a proxy in mainland networks.
+        if os.environ.get("HF_ENDPOINT", "").strip() != _HF_MIRROR:
+            print(f"[Confucius4-R2T2] Default endpoint failed ({type(e).__name__}). "
+                  f"Retrying via mirror {_HF_MIRROR} ...")
+            try:
+                _download_model_snapshot(mp, repo_dir, endpoint=_HF_MIRROR)
+            except Exception as e2:  # noqa: BLE001
+                raise RuntimeError(
+                    _manual_download_hint(mp, repo_dir) + f"\n\nErrors: {e}\n{e2}"
+                ) from e2
+        else:
+            raise RuntimeError(_manual_download_hint(mp, repo_dir) + f"\n\nError: {e}") from e
 
     if not _repo_is_available(repo_dir):
         raise RuntimeError(f"Model download finished but config.json is missing in {repo_dir}.")

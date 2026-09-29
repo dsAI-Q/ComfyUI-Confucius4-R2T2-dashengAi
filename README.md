@@ -49,19 +49,25 @@ ComfyUI/models/r2t2/
 ### 自动下载（默认）
 
 `model_path` 填 Hugging Face 仓库 ID（如 `netease-youdao/Confucius4-R2T2`），保持 `auto_download=True`，
-节点首次执行时会自动从 [Hugging Face](https://huggingface.co/netease-youdao/Confucius4-R2T2) 下载权重到上述目录；
-下载完成后自动从本地路径加载。已下载过则直接复用，不会重复下载。
+节点首次执行时会自动下载权重到上述目录；下载完成后自动从本地路径加载。已下载过则直接复用，不会重复下载。
+
+自动下载自带 **hf-mirror.com 镜像回退**：默认直连 Hugging Face 失败时，自动改用
+`https://hf-mirror.com`（国内无需代理），无需任何配置。两者都失败时会给出手动下载命令。
 
 ### 手动下载（可选）
 
 也可以在任何时间手动下载，效果相同：
 
 ```bash
-# 方式一：huggingface-cli（推荐）
+# 方式一：huggingface-cli + 国内镜像（推荐，无需代理）
+HF_ENDPOINT=https://hf-mirror.com huggingface-cli download netease-youdao/Confucius4-R2T2 \
+  --local-dir "ComfyUI/models/r2t2/netease-youdao/Confucius4-R2T2"
+
+# 方式二：huggingface-cli 直连（海外网络 / 已配置代理）
 huggingface-cli download netease-youdao/Confucius4-R2T2 \
   --local-dir "ComfyUI/models/r2t2/netease-youdao/Confucius4-R2T2"
 
-# 方式二：git lfs
+# 方式三：git lfs
 git lfs install
 git clone https://huggingface.co/netease-youdao/Confucius4-R2T2 \
   "ComfyUI/models/r2t2/netease-youdao/Confucius4-R2T2"
