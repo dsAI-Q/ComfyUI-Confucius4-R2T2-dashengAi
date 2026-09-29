@@ -126,6 +126,16 @@ pip install -r requirements.txt
 - 一次性转写：`Model Loader (backend=transformers)` → `Transcribe`，输入 `audio` 或 `audio_path`，输出 `text` / `language`。
 - 流式转写：`Model Loader (backend=vllm)` → `Streaming Transcribe`（仅支持 vLLM 后端）。
 
+### 可直接导入的示例工作流
+
+`examples/` 目录提供现成的工作流 JSON，导入即可运行：
+
+- **`examples/Confucius4-R2T2-Transcribe-音频转文字.json`** — 一次性转写完整示例（LoadAudio → 模型加载 → 转写 → 文本显示）。
+
+导入方法：ComfyUI 界面菜单 → **Open** → 选择该 JSON 文件，或直接把 JSON 文件拖入画布。
+
+工作流中的展示图片在 `examples/assets/` 下；如需在工作流中显示，请把对应图片复制到 `ComfyUI/input/` 目录（这些展示节点默认处于**跳过**状态，不影响转写主流程运行）。
+
 ---
 
 ## 注意事项

@@ -1,0 +1,673 @@
+{
+  "id": "35bc70d4-e59d-4108-98a1-249910d8321f",
+  "revision": 0,
+  "last_node_id": 41,
+  "last_link_id": 41,
+  "nodes": [
+    {
+      "id": 19,
+      "type": "LoadAudio",
+      "pos": [
+        1740,
+        4870
+      ],
+      "size": [
+        270,
+        140
+      ],
+      "flags": {},
+      "order": 0,
+      "mode": 0,
+      "inputs": [
+        {
+          "label": "音频文件",
+          "name": "audio",
+          "type": "COMBO",
+          "widget": {
+            "name": "audio"
+          },
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "label": "音频",
+          "name": "AUDIO",
+          "type": "AUDIO",
+          "links": [
+            40
+          ]
+        }
+      ],
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.37.4",
+        "Node name for S&R": "LoadAudio",
+        "ue_properties": {
+          "widget_ue_connectable": {},
+          "input_ue_unconnectable": {},
+          "version": "7.8"
+        }
+      },
+      "widgets_values": [
+        "2024-07-31_送一贝子有你竹够手链，相爱一辈子_礼物 _爱的礼物 _手链 _仪式感不能少 _惊喜.mp4",
+        null,
+        null
+      ],
+      "widgets_values_named": {
+        "audio": "2024-07-31_送一贝子有你竹够手链，相爱一辈子_礼物 _爱的礼物 _手链 _仪式感不能少 _惊喜.mp4",
+        "upload": null
+      }
+    },
+    {
+      "id": 20,
+      "type": "ShowText|pysssss",
+      "pos": [
+        2740,
+        4680
+      ],
+      "size": [
+        390,
+        200
+      ],
+      "flags": {},
+      "order": 9,
+      "mode": 0,
+      "inputs": [
+        {
+          "label": "文本",
+          "name": "text",
+          "type": "STRING",
+          "link": 33
+        }
+      ],
+      "outputs": [
+        {
+          "label": "字符串",
+          "name": "STRING",
+          "shape": 6,
+          "type": "STRING",
+          "links": null
+        }
+      ],
+      "properties": {
+        "cnr_id": "comfyui-custom-scripts",
+        "ver": "609f3afaa74b2f88ef9ce8d939626065e3247469",
+        "Node name for S&R": "ShowText|pysssss",
+        "ue_properties": {
+          "widget_ue_connectable": {},
+          "input_ue_unconnectable": {},
+          "version": "7.8"
+        }
+      },
+      "widgets_values": [
+        "我是你的你，你没笑说话的眼睛理不清关系。"
+      ],
+      "widgets_values_named": {
+        "text_0": "我是你的你，你没笑说话的眼睛理不清关系。"
+      }
+    },
+    {
+      "id": 21,
+      "type": "R2T2ModelLoader",
+      "pos": [
+        1730,
+        4540
+      ],
+      "size": [
+        320,
+        210
+      ],
+      "flags": {},
+      "order": 1,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "model",
+          "type": "R2T2_MODEL",
+          "links": [
+            34
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "R2T2ModelLoader",
+        "ue_properties": {
+          "widget_ue_connectable": {},
+          "input_ue_unconnectable": {},
+          "version": "7.8"
+        }
+      },
+      "widgets_values": [
+        "netease-youdao/Confucius4-R2T2",
+        "transformers",
+        512,
+        true,
+        "cuda:0",
+        "bfloat16",
+        0.5
+      ],
+      "widgets_values_named": {
+        "model_path": "netease-youdao/Confucius4-R2T2",
+        "backend": "transformers",
+        "max_new_tokens": 512,
+        "auto_download": true,
+        "device": "cuda:0",
+        "dtype": "bfloat16",
+        "gpu_memory_utilization": 0.5
+      }
+    },
+    {
+      "id": 16,
+      "type": "R2T2Transcribe",
+      "pos": [
+        2210,
+        4590
+      ],
+      "size": [
+        400,
+        200
+      ],
+      "flags": {},
+      "order": 8,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "model",
+          "type": "R2T2_MODEL",
+          "link": 34
+        },
+        {
+          "name": "audio",
+          "shape": 7,
+          "type": "AUDIO",
+          "link": 40
+        }
+      ],
+      "outputs": [
+        {
+          "name": "text",
+          "type": "STRING",
+          "links": [
+            33
+          ]
+        },
+        {
+          "name": "language",
+          "type": "STRING",
+          "links": null
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "R2T2Transcribe",
+        "ue_properties": {
+          "widget_ue_connectable": {},
+          "input_ue_unconnectable": {},
+          "version": "7.8"
+        }
+      },
+      "widgets_values": [
+        "",
+        "auto",
+        ""
+      ],
+      "widgets_values_named": {
+        "audio_path": "",
+        "language": "auto",
+        "context": ""
+      }
+    },
+    {
+      "id": 29,
+      "type": "Note Plus (mtb)",
+      "pos": [
+        1460,
+        4050
+      ],
+      "size": [
+        1050,
+        300
+      ],
+      "flags": {},
+      "order": 2,
+      "mode": 4,
+      "inputs": [],
+      "outputs": [],
+      "title": "小猪AI🐇comfyui一对一陪练教学、加入RH小猪AI团队空间玩高质量工作流",
+      "properties": {
+        "css": "/** here you can write css**/\nh1 {\n    color: whitesmoke;\n}",
+        "theme": "chaos",
+        "ue_properties": {
+          "widget_ue_connectable": {},
+          "input_ue_unconnectable": {},
+          "version": "7.8"
+        },
+        "widget_ue_connectable": {}
+      },
+      "widgets_values": [
+        "大圣AI工作流大全，在线运行：https://www.runninghub.ai/?inviteCode=rh-v1079\r\n\r\n本地部署 网盘链接：https://pan.quark.cn/s/5f8c53860a86（手机端转存官方赠送1T网盘空间）\r\n\r\n如有疑问，可联系作者技术指导：由于程序插件环境搭建、效果调试等非常耗时间耗精力，因此如需远程技术指导，需微信付费技术指导。长期提供comfyui一对一陪练教学，加微信：qrock168，备注：Ai学习\r\n\r\nB站开放教学：https://space.bilibili.com/2083795366"
+      ],
+      "widgets_values_named": {
+        "HTML": "大圣AI工作流大全，在线运行：https://www.runninghub.ai/?inviteCode=rh-v1079\r\n\r\n本地部署 网盘链接：https://pan.quark.cn/s/5f8c53860a86（手机端转存官方赠送1T网盘空间）\r\n\r\n如有疑问，可联系作者技术指导：由于程序插件环境搭建、效果调试等非常耗时间耗精力，因此如需远程技术指导，需微信付费技术指导。长期提供comfyui一对一陪练教学，加微信：qrock168，备注：Ai学习\r\n\r\nB站开放教学：https://space.bilibili.com/2083795366"
+      },
+      "color": "#432",
+      "bgcolor": "#653",
+      "shape": 1
+    },
+    {
+      "id": 31,
+      "type": "LoadImage",
+      "pos": [
+        2870,
+        4020
+      ],
+      "size": [
+        270,
+        320
+      ],
+      "flags": {},
+      "order": 3,
+      "mode": 4,
+      "inputs": [
+        {
+          "label": "图像",
+          "name": "image",
+          "type": "COMBO",
+          "widget": {
+            "name": "image"
+          },
+          "link": null
+        },
+        {
+          "label": "上传",
+          "name": "upload",
+          "type": "IMAGEUPLOAD",
+          "widget": {
+            "name": "upload"
+          },
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "label": "图像",
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": null
+        },
+        {
+          "label": "遮罩",
+          "name": "MASK",
+          "type": "MASK",
+          "links": null
+        }
+      ],
+      "properties": {
+        "ue_properties": {
+          "widget_ue_connectable": {},
+          "input_ue_unconnectable": {},
+          "version": "7.8"
+        },
+        "cnr_id": "comfy-core",
+        "ver": "0.34.0",
+        "Node name for S&R": "LoadImage",
+        "widget_ue_connectable": {
+          "image": true,
+          "upload": true
+        },
+        "guhaiImageValue": "入团指导 - 副本.png",
+        "ttNbgOverride": {
+          "color": "#223",
+          "bgcolor": "#335",
+          "groupcolor": "#88A"
+        }
+      },
+      "widgets_values": [
+        "入团指导 - 副本.png",
+        "image"
+      ],
+      "widgets_values_named": {
+        "image": "入团指导 - 副本.png",
+        "upload": "image"
+      },
+      "color": "#223",
+      "bgcolor": "#335"
+    },
+    {
+      "id": 32,
+      "type": "LoadImage",
+      "pos": [
+        3170,
+        4020
+      ],
+      "size": [
+        270,
+        320
+      ],
+      "flags": {},
+      "order": 4,
+      "mode": 4,
+      "inputs": [
+        {
+          "label": "图像",
+          "name": "image",
+          "type": "COMBO",
+          "widget": {
+            "name": "image"
+          },
+          "link": null
+        },
+        {
+          "label": "上传",
+          "name": "upload",
+          "type": "IMAGEUPLOAD",
+          "widget": {
+            "name": "upload"
+          },
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "label": "图像",
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": null
+        },
+        {
+          "label": "遮罩",
+          "name": "MASK",
+          "type": "MASK",
+          "links": null
+        }
+      ],
+      "properties": {
+        "ue_properties": {
+          "widget_ue_connectable": {},
+          "input_ue_unconnectable": {},
+          "version": "7.8"
+        },
+        "cnr_id": "comfy-core",
+        "ver": "0.34.0",
+        "Node name for S&R": "LoadImage",
+        "widget_ue_connectable": {
+          "image": true,
+          "upload": true
+        },
+        "guhaiImageValue": "comfyui招生.png",
+        "ttNbgOverride": {
+          "color": "#223",
+          "bgcolor": "#335",
+          "groupcolor": "#88A"
+        }
+      },
+      "widgets_values": [
+        "comfyui招生.png",
+        "image"
+      ],
+      "widgets_values_named": {
+        "image": "comfyui招生.png",
+        "upload": "image"
+      },
+      "color": "#223",
+      "bgcolor": "#335"
+    },
+    {
+      "id": 33,
+      "type": "LoadImage",
+      "pos": [
+        3470,
+        4020
+      ],
+      "size": [
+        270,
+        320
+      ],
+      "flags": {},
+      "order": 5,
+      "mode": 4,
+      "inputs": [
+        {
+          "label": "图像",
+          "name": "image",
+          "type": "COMBO",
+          "widget": {
+            "name": "image"
+          },
+          "link": null
+        },
+        {
+          "label": "上传",
+          "name": "upload",
+          "type": "IMAGEUPLOAD",
+          "widget": {
+            "name": "upload"
+          },
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "label": "图像",
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": null
+        },
+        {
+          "label": "遮罩",
+          "name": "MASK",
+          "type": "MASK",
+          "links": null
+        }
+      ],
+      "properties": {
+        "ue_properties": {
+          "widget_ue_connectable": {},
+          "input_ue_unconnectable": {},
+          "version": "7.8"
+        },
+        "cnr_id": "comfy-core",
+        "ver": "0.34.0",
+        "Node name for S&R": "LoadImage",
+        "widget_ue_connectable": {
+          "image": true,
+          "upload": true
+        },
+        "guhaiImageValue": "QQ群1051067251.jpg",
+        "ttNbgOverride": {
+          "color": "#223",
+          "bgcolor": "#335",
+          "groupcolor": "#88A"
+        }
+      },
+      "widgets_values": [
+        "QQ群1051067251.jpg",
+        "image"
+      ],
+      "widgets_values_named": {
+        "image": "QQ群1051067251.jpg",
+        "upload": "image"
+      },
+      "color": "#223",
+      "bgcolor": "#335"
+    },
+    {
+      "id": 30,
+      "type": "LoadImage",
+      "pos": [
+        2580,
+        4030
+      ],
+      "size": [
+        270,
+        320
+      ],
+      "flags": {},
+      "order": 6,
+      "mode": 4,
+      "inputs": [
+        {
+          "label": "图像",
+          "name": "image",
+          "type": "COMBO",
+          "widget": {
+            "name": "image"
+          },
+          "link": null
+        },
+        {
+          "label": "上传",
+          "name": "upload",
+          "type": "IMAGEUPLOAD",
+          "widget": {
+            "name": "upload"
+          },
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "label": "图像",
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": null
+        },
+        {
+          "label": "遮罩",
+          "name": "MASK",
+          "type": "MASK",
+          "links": null
+        }
+      ],
+      "properties": {
+        "ue_properties": {
+          "widget_ue_connectable": {},
+          "input_ue_unconnectable": {},
+          "version": "7.8"
+        },
+        "cnr_id": "comfy-core",
+        "ver": "0.34.0",
+        "Node name for S&R": "LoadImage",
+        "widget_ue_connectable": {
+          "image": true,
+          "upload": true
+        },
+        "guhaiImageValue": "Qwen_image_2.1_00011.png",
+        "ttNbgOverride": {
+          "color": "#223",
+          "bgcolor": "#335",
+          "groupcolor": "#88A"
+        }
+      },
+      "widgets_values": [
+        "Qwen_image_2.1_00011.png",
+        "image"
+      ],
+      "widgets_values_named": {
+        "image": "Qwen_image_2.1_00011.png",
+        "upload": "image"
+      },
+      "color": "#223",
+      "bgcolor": "#335"
+    },
+    {
+      "id": 28,
+      "type": "Label (rgthree)",
+      "pos": [
+        260,
+        3620
+      ],
+      "size": [
+        4730.49267578125,
+        200
+      ],
+      "flags": {
+        "allow_interaction": true
+      },
+      "order": 7,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [],
+      "title": "🐇大圣AI🐷Confucius4-R2T2 Transcribe音频转文字",
+      "properties": {
+        "fontSize": 200,
+        "fontFamily": "阿里亚尔体",
+        "fontColor": "#FFDF00",
+        "textAlign": "left",
+        "backgroundColor": "transparent",
+        "padding": 0,
+        "borderRadius": 0,
+        "angle": 0,
+        "ue_properties": {
+          "widget_ue_connectable": {},
+          "input_ue_unconnectable": {},
+          "version": "7.8"
+        },
+        "widget_ue_connectable": {}
+      },
+      "color": "#fff0",
+      "bgcolor": "#fff0"
+    }
+  ],
+  "links": [
+    [
+      33,
+      16,
+      0,
+      20,
+      0,
+      "STRING"
+    ],
+    [
+      34,
+      21,
+      0,
+      16,
+      0,
+      "R2T2_MODEL"
+    ],
+    [
+      40,
+      19,
+      0,
+      16,
+      1,
+      "AUDIO"
+    ]
+  ],
+  "groups": [
+    {
+      "id": 1,
+      "title": "Group",
+      "bounding": [
+        1440,
+        3940,
+        2316,
+        426
+      ],
+      "color": "#3f789e",
+      "flags": {}
+    }
+  ],
+  "config": {},
+  "extra": {
+    "ue_links": [],
+    "ds": {
+      "scale": 0.4090909090909102,
+      "offset": [
+        975.7231282003735,
+        -2791.318938145794
+      ]
+    },
+    "anomalous_hashes": {},
+    "links_added_by_ue": [],
+    "frontendVersion": "1.52.7",
+    "VHS_latentpreview": false,
+    "VHS_latentpreviewrate": 0,
+    "VHS_MetadataImage": true,
+    "VHS_KeepIntermediate": true
+  },
+  "version": 0.4,
+  "seed_widgets": {}
+}
