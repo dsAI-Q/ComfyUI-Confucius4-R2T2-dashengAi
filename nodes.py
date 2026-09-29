@@ -29,8 +29,20 @@ _MODEL_SUBDIR = "r2t2"
 
 def _get_model_class():
     """Lazily import the R2T2ASRModel class (vendored `r2t2` package)."""
-    from r2t2 import R2T2ASRModel  # noqa: PLC0415
-    return R2T2ASRModel
+    try:
+        from r2t2 import R2T2ASRModel  # noqa: PLC0415
+        return R2T2ASRModel
+    except ModuleNotFoundError as e:  # noqa: BLE001
+        missing = getattr(e, "name", "")
+        hint = (
+            f"Missing dependency '{missing or 'qwen-asr'}' required by the R2T2 backend. "
+            "Please install the plugin dependencies first:\n"
+            "  cd ComfyUI/custom_nodes/ComfyUI-Confucius4-R2T2-dashengAi\n"
+            "  pip install -r requirements.txt\n"
+            "Note: this installs `qwen-asr`, which pins transformers==4.57.6 "
+            "(it may downgrade a newer transformers in your environment)."
+        )
+        raise RuntimeError(hint) from e
 
 
 def _clear_cache():
@@ -91,14 +103,35 @@ _HF_MIRROR = "https://hf-mirror.com"
 
 
 def _download_model_snapshot(repo_id: str, repo_dir: str, endpoint=None) -> None:
-    """Download a full HF repo snapshot to `repo_dir`."""
+    """Download a full HF repo snapshot to `repo_dir`.
+
+    `etag_timeout` is raised above the huggingface_hub default (10s) because
+    mirrors like hf-mirror.com are slow to answer HEAD requests.
+    """
     from huggingface_hub import snapshot_download  # noqa: PLC0415
     snapshot_download(
         repo_id=repo_id,
         local_dir=repo_dir,
-        local_dir_use_symlinks=False,
         endpoint=endpoint,
+        etag_timeout=30,
     )
+
+
+def _try_modelscope_download(repo_id: str, repo_dir: str):
+    """Best-effort ModelScope download (mainland China CDN, fast & no proxy).
+
+    Only used when the `modelscope` package is already installed. Returns
+    silently on failure so the caller can fall through to manual hints.
+    """
+    try:
+        from modelscope import snapshot_download as ms_download  # noqa: PLC0415
+    except Exception:  # noqa: BLE001
+        return False
+    try:
+        ms_download(repo_id, local_dir=repo_dir)
+        return True
+    except Exception:  # noqa: BLE001
+        return False
 
 
 def _manual_download_hint(repo_id: str, repo_dir: str) -> str:
@@ -171,6 +204,14 @@ def _ensure_model(model_path: str, auto_download: bool = True) -> str:
         except Exception as e:  # noqa: BLE001
             errors.append(f"  [{label}] {type(e).__name__}: {e}")
             print(f"[Confucius4-R2T2] Endpoint '{label}' failed. Trying the next one ...")
+
+    # Final fallback: ModelScope (Alibaba mainland CDN) when available.
+    if not _repo_is_available(repo_dir):
+        print("[Confucius4-R2T2] HF endpoints all failed. Trying ModelScope ...")
+        if _try_modelscope_download(mp, repo_dir):
+            errors.append("  [modelscope] OK")
+        else:
+            errors.append("  [modelscope] skipped (package not installed or download failed)")
 
     if not _repo_is_available(repo_dir):
         raise RuntimeError(
@@ -460,6 +501,8 @@ class R2T2Transcribe:
             context=context or "",
             return_time_stamps=False,
         )
+        if not results:
+            return ("", "")
         r = results[0]
         return (str(r.text), str(r.language))
 

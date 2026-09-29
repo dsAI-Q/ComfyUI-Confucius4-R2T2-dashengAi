@@ -51,8 +51,13 @@ ComfyUI/models/r2t2/
 `model_path` 填 Hugging Face 仓库 ID（如 `netease-youdao/Confucius4-R2T2`），保持 `auto_download=True`，
 节点首次执行时会自动下载权重到上述目录；下载完成后自动从本地路径加载。已下载过则直接复用，不会重复下载。
 
-自动下载自带 **hf-mirror.com 镜像回退**：默认直连 Hugging Face 失败时，自动改用
-`https://hf-mirror.com`（国内无需代理），无需任何配置。两者都失败时会给出手动下载命令。
+自动下载按顺序尝试多个通道，任意一个成功即完成：
+
+1. **Hugging Face 官方**（或进程中显式配置的 `HF_ENDPOINT`）；
+2. **hf-mirror.com 镜像**（默认官方失败时自动切换，国内无需代理）；
+3. **ModelScope 魔搭**（阿里国内 CDN，速度最快；需要已安装 `modelscope`：`pip install -U modelscope`）。
+
+全部失败时会给出含三条手动下载命令的错误提示。无论哪个通道，权重都会落在 `ComfyUI/models/r2t2/` 下。
 
 ### 手动下载（可选）
 
@@ -71,6 +76,10 @@ huggingface-cli download netease-youdao/Confucius4-R2T2 \
 git lfs install
 git clone https://huggingface.co/netease-youdao/Confucius4-R2T2 \
   "ComfyUI/models/r2t2/netease-youdao/Confucius4-R2T2"
+
+# 方式四：ModelScope（国内最快，推荐国内用户）
+pip install -U modelscope
+python -c "from modelscope import snapshot_download; snapshot_download('netease-youdao/Confucius4-R2T2', local_dir=r'ComfyUI/models/r2t2/netease-youdao/Confucius4-R2T2')"
 ```
 
 手动下载后，`model_path` 继续填仓库 ID（自动识别本地已有），或直接填本地目录路径均可。
@@ -121,10 +130,30 @@ pip install -r requirements.txt
 
 ## 注意事项
 
-1. **模型下载**：默认自动从 Hugging Face 下载到 `ComfyUI/models/r2t2/`（约 2B 参数，需可访问 HF）；也可手动下载，详见上方「模型存储与下载」章节。
-2. **vLLM 仅支持 Linux**：Windows / macOS 请使用 `transformers` 后端（一次性转写不受影响）。
-3. **流式转写限制**：仅 vLLM 后端；不支持时间戳；单条音频（无批处理）。
-4. **显存**：transformers 后端约需 8GB+ 显存（bfloat16），vLLM 后端可通过 `gpu_memory_utilization` 调节。
+1. **模型下载**：默认自动下载到 `ComfyUI/models/r2t2/`（约 2B 参数，4GB）；自动按「官方 → hf-mirror 镜像 → ModelScope」顺序尝试，国内网络无需手动干预。
+2. **依赖版本（重要）**：`qwen-asr 0.0.6` 强制要求 `transformers==4.57.6`，安装依赖时**可能把环境里的 transformers 降级**。若你的环境有其他插件需要 transformers ≥ 5.x（如 OmniVoice），两者会冲突——本插件运行时必须以 4.57.6 为准。如需保留 transformers 5.x，可等 qwen-asr 后续版本支持后再升级。
+3. **vLLM 仅支持 Linux**：Windows / macOS 请使用 `transformers` 后端（一次性转写不受影响）。
+4. **流式转写限制**：仅 vLLM 后端；不支持时间戳；单条音频（无批处理）。
+5. **显存**：transformers 后端约需 8GB+ 显存（bfloat16），vLLM 后端可通过 `gpu_memory_utilization` 调节。
+
+---
+
+## 常见问题（FAQ）
+
+**Q1：ComfyUI-Manager 通过 GitHub 链接安装失败（`Failed to connect to github.com:443`）？**
+这是网络无法直连 GitHub 所致，不是插件问题。方法一：开启本地代理后重试；方法二：手动下载仓库 zip 解压到 `ComfyUI/custom_nodes/` 下（模型等大文件不在仓库内，仓库仅约 60KB）。
+
+**Q2：模型自动下载失败/一直转圈？**
+插件会自动尝试 官方 → hf-mirror → ModelScope 三个通道；全部失败会给出明确的手动下载命令。国内用户建议预先安装 modelscope 以获得最快通道：`pip install -U modelscope`。也可以直接按上方「手动下载」任选一种方式把权重放到 `ComfyUI/models/r2t2/netease-youdao/Confucius4-R2T2/`，节点检测到后直接使用。
+
+**Q3：装了 requirements.txt 后 transformers 版本变了，其他插件报错？**
+见「注意事项 2」。qwen-asr 0.0.6 钉死 `transformers==4.57.6`，这是上游包的硬约束。如需回退，`pip install transformers==<原版本>`，但本插件的 qwen-asr 将无法运行。
+
+**Q4：节点的 `audio`（AUDIO）输入连不上任何节点？**
+`AUDIO` 类型由社区插件定义（如 VideoHelperSuite）。没装这类插件时该输入不可连接，此时直接使用 `audio_path` 输入本地音频文件路径即可，功能完全一样。
+
+**Q5：Windows 上 `Streaming Transcribe` 节点报错？**
+流式转写要求 vLLM 后端（仅 Linux + CUDA）。Windows 请用 `Transcribe (One-shot)` 节点，输出为完整转写文本，与流式最终结果一致。
 
 ---
 

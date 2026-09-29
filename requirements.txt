@@ -3,6 +3,15 @@
 # `torch` / `transformers` are normally already present in a ComfyUI
 # environment, so they are intentionally not pinned here.
 #
+# IMPORTANT: `qwen-asr 0.0.6` pins `transformers==4.57.6`. Installing this
+# requirements.txt may DOWNGRADE a newer transformers in your environment.
+# If another plugin needs transformers >= 5.x, it will conflict — this plugin
+# requires 4.57.6 to run.
+#
+# Optional (recommended for users in mainland China):
+#   pip install -U modelscope
+#   -> enables the ModelScope download channel (fastest, no proxy needed).
+#
 # Optional: for the vLLM backend (Linux + CUDA only) install additionally:
 #   pip install -U qwen-asr[vllm]
 # and load the model with backend="vllm".
