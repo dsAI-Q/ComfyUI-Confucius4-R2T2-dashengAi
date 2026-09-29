@@ -112,6 +112,24 @@ def _manual_download_hint(repo_id: str, repo_dir: str) -> str:
     )
 
 
+def _endpoint_candidates():
+    """Ordered endpoint list to try, honoring an explicitly set HF_ENDPOINT.
+
+    NOTE: huggingface_hub reads HF_ENDPOINT only once at import time
+    (constants.ENDPOINT). If the variable is set *after* the library was
+    imported in the ComfyUI process, passing endpoint=None would still hit
+    the original default. Passing explicit endpoints here bypasses that.
+    """
+    env_ep = os.environ.get("HF_ENDPOINT", "").strip()
+    if env_ep:
+        eps = [env_ep]
+        if env_ep != _HF_MIRROR:
+            eps.append(_HF_MIRROR)
+        return eps
+    # None -> huggingface_hub default (official endpoint or HF_ENDPOINT)
+    return [None, _HF_MIRROR]
+
+
 def _ensure_model(model_path: str, auto_download: bool = True) -> str:
     """
     Resolve `model_path` to a real local path.
@@ -141,27 +159,22 @@ def _ensure_model(model_path: str, auto_download: bool = True) -> str:
         )
 
     print(f"[Confucius4-R2T2] Downloading model '{mp}' to:\n  {repo_dir}")
-    last_err = None
-    try:
-        # 1) Default endpoint (respects HF_ENDPOINT / proxy env of the process).
-        _download_model_snapshot(mp, repo_dir, endpoint=None)
-    except Exception as e:  # noqa: BLE001
-        last_err = e
-        # 2) Fallback: hf-mirror.com works without a proxy in mainland networks.
-        if os.environ.get("HF_ENDPOINT", "").strip() != _HF_MIRROR:
-            print(f"[Confucius4-R2T2] Default endpoint failed ({type(e).__name__}). "
-                  f"Retrying via mirror {_HF_MIRROR} ...")
-            try:
-                _download_model_snapshot(mp, repo_dir, endpoint=_HF_MIRROR)
-            except Exception as e2:  # noqa: BLE001
-                raise RuntimeError(
-                    _manual_download_hint(mp, repo_dir) + f"\n\nErrors: {e}\n{e2}"
-                ) from e2
-        else:
-            raise RuntimeError(_manual_download_hint(mp, repo_dir) + f"\n\nError: {e}") from e
+    errors = []
+    for endpoint in _endpoint_candidates():
+        label = endpoint if endpoint else "default"
+        try:
+            _download_model_snapshot(mp, repo_dir, endpoint=endpoint)
+            break
+        except Exception as e:  # noqa: BLE001
+            errors.append(f"  [{label}] {type(e).__name__}: {e}")
+            print(f"[Confucius4-R2T2] Endpoint '{label}' failed. Trying the next one ...")
 
     if not _repo_is_available(repo_dir):
-        raise RuntimeError(f"Model download finished but config.json is missing in {repo_dir}.")
+        raise RuntimeError(
+            _manual_download_hint(mp, repo_dir)
+            + "\n\nErrors:\n"
+            + "\n".join(errors)
+        )
     return repo_dir
 
 
