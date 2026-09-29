@@ -15,8 +15,17 @@
 import os
 import re
 import string
+import sys
 
 import numpy as np
+
+# ComfyUI loads custom nodes as `custom_nodes.<dir>` packages and — depending
+# on version — may NOT add the plugin directory to sys.path. The vendored
+# `r2t2` package lives next to this file, so make sure it is importable
+# regardless of how ComfyUI loads the plugin.
+_PLUGIN_DIR = os.path.dirname(os.path.abspath(__file__))
+if _PLUGIN_DIR not in sys.path:
+    sys.path.insert(0, _PLUGIN_DIR)
 
 # -----------------------------------------------------------------------------
 # Model cache
