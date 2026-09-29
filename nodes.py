@@ -107,8 +107,11 @@ def _manual_download_hint(repo_id: str, repo_dir: str) -> str:
         "Please download it manually (see README):\n"
         f"  # option 1: direct / with proxy (overseas network)\n"
         f"  huggingface-cli download {repo_id} --local-dir \"{repo_dir}\"\n"
-        f"  # option 2: mainland mirror, no proxy needed (recommended)\n"
-        f"  HF_ENDPOINT=https://hf-mirror.com huggingface-cli download {repo_id} --local-dir \"{repo_dir}\""
+        f"  # option 2: mainland HF mirror, no proxy needed (recommended)\n"
+        f"  HF_ENDPOINT=https://hf-mirror.com huggingface-cli download {repo_id} --local-dir \"{repo_dir}\"\n"
+        f"  # option 3: ModelScope (Alibaba, fastest in mainland China)\n"
+        f"  pip install -U modelscope && python -c \"from modelscope import snapshot_download; "
+        f"snapshot_download('{repo_id}', local_dir=r'{repo_dir}')\""
     )
 
 
